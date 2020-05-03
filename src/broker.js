@@ -6,7 +6,7 @@ const EventEmitter = require("events")
 
 module.exports = async () => {
   const zmqSocket = new zmq.Router()
-  const address = "tcp://127.0.0.1:2900"
+  const address = "tcp://0.0.0.0:2900"
   await zmqSocket.bind(address)
   console.log(`ZMQ Broker bound to ${address}`)
 
