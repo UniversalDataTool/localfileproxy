@@ -1,4 +1,8 @@
+// @flow weak
+
 const zmq = require("zeromq")
+const fs = require("fs")
+const path = require("path")
 
 const clientServiceSock = new zmq.Dealer()
 clientServiceSock.connect("tcp://127.0.0.1:2900")
@@ -6,22 +10,22 @@ clientServiceSock.connect("tcp://127.0.0.1:2900")
   await clientServiceSock.send([
     null,
     "client_service_heartbeat",
-    "test_local_client_id",
+    "exampleclient",
   ])
   setInterval(async () => {
     await clientServiceSock.send([
       null,
       "client_service_heartbeat",
-      "test_local_client_id",
+      "exampleclient",
     ])
   }, 5000)
   for await (const [blank, header, clientId, fileId] of clientServiceSock) {
     clientServiceSock.send([
       null,
       "file",
-      "test_local_client_id",
+      "exampleclient",
       fileId,
-      fs.readFileSync(path.join(__dirname, fileId)),
+      fs.readFileSync(path.join(__dirname, fileId.toString())),
     ])
   }
 })()

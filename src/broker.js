@@ -23,6 +23,7 @@ module.exports = async () => {
         switch (header.toString()) {
           case "client_service_heartbeat": {
             const [clientId] = rest
+            console.log("heartbeat", clientId.toString())
             if (services[clientId]) {
               clearTimeout(services[clientId].timeout)
             }
@@ -63,7 +64,10 @@ module.exports = async () => {
           }, 5000)
 
           const service = services[localClientId]
-          if (!service) throw new Error("client server not running")
+          if (!service)
+            throw new Error(
+              `"${localClientId}" client service not found. Your url might be wrong or the client service might have gone offline.`
+            )
 
           await zmqSocket.send([
             service.socketId,
