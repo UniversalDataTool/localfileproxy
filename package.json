@@ -1,0 +1,24 @@
+{
+  "name": "localfileproxy.universaldatattool.com",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "micro src/main.js",
+    "start:dev": "micro-dev src/main.js"
+  },
+  "author": "Severin Ibarluzea",
+  "license": "ISC",
+  "dependencies": {
+    "micro": "^9.3.4",
+    "micro-dev": "^3.0.0",
+    "zeromq": "^6.0.0-beta.6"
+  },
+  "devDependencies": {
+    "ava": "^3.8.1",
+    "prettier": "^2.0.5",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5",
+    "test-listen": "^1.1.0"
+  }
+}
