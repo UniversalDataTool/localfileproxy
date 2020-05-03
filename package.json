@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "ava": "^3.8.1",
+    "flow-bin": "^0.123.0",
     "prettier": "^2.0.5",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",

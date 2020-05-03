@@ -1,14 +1,14 @@
 const test = require("ava")
 const zmq = require("zeromq")
-const createSocket = require("../src/socket")
+const createBroker = require("../src/broker")
 const path = require("path")
 const fs = require("fs")
 
 test("send file over socket", async (t) => {
-  const socket = await createSocket()
+  const socket = await createBroker()
   t.assert(socket.tcpAddr)
 
-  const localClientSock = new zmq.Reply({
+  const localClientSock = new zmq.Dealer({
     // routingId: "test_local_client_id",
   })
   await localClientSock.connect(socket.tcpAddr)
@@ -16,15 +16,30 @@ test("send file over socket", async (t) => {
   async function listenOnLocalClientSock() {
     console.log("listening on local client sock")
     let k = 0
-    for await (const [localClientMsgFileId] of localClientSock) {
+    for await (const [
+      idk,
+      channel,
+      blank,
+      localClientMsgFileId,
+      ...other
+    ] of localClientSock) {
+      console.log({
+        idk,
+        blank,
+        channel: channel.toString(),
+        localClientMsgFileId: localClientMsgFileId.toString(),
+        other: other.map((a) => a.toString()),
+      })
       if (localClientMsgFileId.toString() !== "testfile.txt") {
         throw new Error(`Wrong message to client "${localClientMsgFileId}"`)
       }
-      console.log({ localClientMsgFileId: localClientMsgFileId.toString() })
       k += 1
-      await localClientSock.send(
-        fs.readFileSync(path.join(__dirname, "./testfile.txt"))
-      )
+      console.log("sending file content")
+      await localClientSock.send([
+        localClientMsgFileId,
+        "",
+        fs.readFileSync(path.join(__dirname, "./testfile.txt")),
+      ])
     }
     console.log("done listening on local client sock")
   }
