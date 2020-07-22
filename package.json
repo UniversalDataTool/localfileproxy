@@ -5,6 +5,7 @@
   "main": "src/main.js",
   "scripts": {
     "start": "micro src/main.js",
+    "start:debug": "LOCALFILEPROXY_DEBUG=TRUE micro src/main.js",
     "start:dev": "micro-dev src/main.js",
     "test": "ava tests/*.test.js --serial"
   },

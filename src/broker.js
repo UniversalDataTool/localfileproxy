@@ -27,6 +27,7 @@ module.exports = async () => {
         try {
           switch (header.toString()) {
             case "client_service_heartbeat": {
+              if (rest.length !== 2) continue
               const [clientId, secret] = rest
               if (secret.toString() !== SECRET) continue
               if (DEBUG) console.log("heartbeat", clientId.toString())
