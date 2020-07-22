@@ -5,6 +5,7 @@ const EventEmitter = require("events")
 // const sock =
 
 const SECRET = process.env.LOCALFILEPROXY_SECRET || "default_secret"
+const DEBUG = Boolean(process.env.LOCALFILEPROXY_DEBUG)
 
 module.exports = async () => {
   const zmqSocket = new zmq.Router()
@@ -22,12 +23,13 @@ module.exports = async () => {
     services,
     start: async () => {
       for await (const [sender, blank, header, ...rest] of zmqSocket) {
+        if (DEBUG) console.log({ sender: sender.toString() })
         try {
           switch (header.toString()) {
             case "client_service_heartbeat": {
               const [clientId, secret] = rest
               if (secret.toString() !== SECRET) continue
-              console.log("heartbeat", clientId.toString())
+              if (DEBUG) console.log("heartbeat", clientId.toString())
               if (services[clientId]) {
                 clearTimeout(services[clientId].timeout)
               }
@@ -51,12 +53,13 @@ module.exports = async () => {
             }
           }
         } catch (e) {
-          console.log(
-            "Err:",
-            e.toString(),
-            header,
-            JSON.stringify(rest).slice(0, 100)
-          )
+          if (DEBUG)
+            console.log(
+              "Err:",
+              e.toString(),
+              header,
+              JSON.stringify(rest).slice(0, 100)
+            )
         }
       }
     },
