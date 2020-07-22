@@ -1,0 +1,17 @@
+title localfileproxy (use on sequencediagram.org)
+
+Client -> Server: ZMQ SEND {\n  header: "client_service_heartbeat",\n  clientId,\n  secret\n}
+
+box over Server: Starts 10 second timer to remember client
+
+Client -> Server: {\n  header: "client_service_heartbeat",\n  clientId,\n  secret\n}
+
+box over Server: Restarts 10 second timer to remember client
+
+Browser -> Server: GET /client_id/file_path
+
+Server -> Client: ZMQ SEND { header: "file_request", fileId }
+
+Client -> Server: ZMQ SEND { header: "file", clientId, fileId, content }
+
+Server -> Browser: Binary File Content

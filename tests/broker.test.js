@@ -5,7 +5,6 @@ const zmq = require("zeromq")
 const createBroker = require("../src/broker")
 const path = require("path")
 const fs = require("fs")
-const requestFile = require("./request-file")
 
 test("send file over broker", async (t) => {
   const broker = await createBroker()
@@ -22,6 +21,7 @@ test("send file over broker", async (t) => {
         null,
         "client_service_heartbeat",
         "test_local_client_id",
+        "default_secret",
       ])
       for await (const [blank, header, clientId, fileId] of clientServiceSock) {
         clientServiceSock.send([

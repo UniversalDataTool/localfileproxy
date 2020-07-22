@@ -4,6 +4,8 @@ const zmq = require("zeromq")
 const EventEmitter = require("events")
 // const sock =
 
+const SECRET = process.env.LOCALFILEPROXY_SECRET || "default_secret"
+
 module.exports = async () => {
   const zmqSocket = new zmq.Router()
   const address = "tcp://0.0.0.0:2900"
@@ -20,31 +22,41 @@ module.exports = async () => {
     services,
     start: async () => {
       for await (const [sender, blank, header, ...rest] of zmqSocket) {
-        switch (header.toString()) {
-          case "client_service_heartbeat": {
-            const [clientId] = rest
-            console.log("heartbeat", clientId.toString())
-            if (services[clientId]) {
-              clearTimeout(services[clientId].timeout)
+        try {
+          switch (header.toString()) {
+            case "client_service_heartbeat": {
+              const [clientId, secret] = rest
+              if (secret.toString() !== SECRET) continue
+              console.log("heartbeat", clientId.toString())
+              if (services[clientId]) {
+                clearTimeout(services[clientId].timeout)
+              }
+              services[clientId] = {
+                socketId: sender,
+                timeout: setTimeout(() => {
+                  delete services[clientId]
+                }, 10000),
+              }
+              break
             }
-            services[clientId] = {
-              socketId: sender,
-              timeout: setTimeout(() => {
-                delete services[clientId]
-              }, 10000),
+            case "file": {
+              const [clientId, fileId, content] = rest
+              events.emit(
+                "file_received",
+                clientId.toString(),
+                fileId.toString(),
+                content
+              )
+              break
             }
-            break
           }
-          case "file": {
-            const [clientId, fileId, content] = rest
-            events.emit(
-              "file_received",
-              clientId.toString(),
-              fileId.toString(),
-              content
-            )
-            break
-          }
+        } catch (e) {
+          console.log(
+            "Err:",
+            e.toString(),
+            header,
+            JSON.stringify(rest).slice(0, 100)
+          )
         }
       }
     },

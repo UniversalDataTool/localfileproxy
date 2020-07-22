@@ -4,10 +4,15 @@ const createBroker = require("./broker")
 
 let broker
 
-createBroker().then((newBroker) => {
-  broker = newBroker
-  broker.start()
-})
+createBroker()
+  .then((newBroker) => {
+    broker = newBroker
+    return broker.start()
+  })
+  .catch((e) => {
+    console.log("Couldn't start broker")
+    process.exit(1)
+  })
 
 module.exports = async (req, res) => {
   if (!broker) return micro.send(res, 500, "server still initializing")

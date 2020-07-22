@@ -11,12 +11,14 @@ clientServiceSock.connect("tcp://127.0.0.1:2900")
     null,
     "client_service_heartbeat",
     "exampleclient",
+    "default_secret",
   ])
   setInterval(async () => {
     await clientServiceSock.send([
       null,
       "client_service_heartbeat",
       "exampleclient",
+      "default_secret",
     ])
   }, 5000)
   for await (const [blank, header, clientId, fileId] of clientServiceSock) {

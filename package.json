@@ -5,7 +5,8 @@
   "main": "src/main.js",
   "scripts": {
     "start": "micro src/main.js",
-    "start:dev": "micro-dev src/main.js"
+    "start:dev": "micro-dev src/main.js",
+    "test": "ava tests/*.test.js --serial"
   },
   "author": "Severin Ibarluzea",
   "license": "ISC",

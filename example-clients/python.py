@@ -13,7 +13,9 @@ running = True
 
 
 def send_heartbeat():
-    socket.send_multipart([b"", b"client_service_heartbeat", b"exampleclient"])
+    socket.send_multipart(
+        [b"", b"client_service_heartbeat", b"exampleclient", b"default_secret"]
+    )
 
 
 def send_heartbeat_every_5s():
