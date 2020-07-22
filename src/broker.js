@@ -2,12 +2,16 @@
 
 const zmq = require("zeromq")
 const EventEmitter = require("events")
+const killPort = require("kill-port")
 // const sock =
 
 const SECRET = process.env.LOCALFILEPROXY_SECRET || "default_secret"
 const DEBUG = Boolean(process.env.LOCALFILEPROXY_DEBUG)
 
+if (DEBUG) console.log("Debug Mode is enabled")
+
 module.exports = async () => {
+  await killPort(2900, "tcp").catch((e) => {})
   const zmqSocket = new zmq.Router()
   const address = "tcp://0.0.0.0:2900"
   await zmqSocket.bind(address)
@@ -23,7 +27,6 @@ module.exports = async () => {
     services,
     start: async () => {
       for await (const [sender, blank, header, ...rest] of zmqSocket) {
-        if (DEBUG) console.log({ sender: sender.toString() })
         try {
           switch (header.toString()) {
             case "client_service_heartbeat": {
