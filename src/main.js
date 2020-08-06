@@ -1,6 +1,7 @@
 const micro = require("micro")
 const zmq = require("zeromq")
 const createBroker = require("./broker")
+const cors = require("micro-cors")()
 
 let broker
 
@@ -14,7 +15,7 @@ createBroker()
     process.exit(1)
   })
 
-module.exports = async (req, res) => {
+module.exports = cors(async (req, res) => {
   if (!broker) return micro.send(res, 500, "server still initializing")
 
   if (req.url === "/") {
@@ -44,4 +45,4 @@ module.exports = async (req, res) => {
       return micro.send(res, 500, e.toString())
     }
   }
-}
+})
